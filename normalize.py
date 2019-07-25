@@ -25,6 +25,9 @@ def clean_wiki(text):
     text = re.sub(r'<[^>]*>', '', text)  # trailing HTML tags
     text = re.sub(r'&.{4,6};', '', text)  # HTML unicode characters
     text = re.sub(r'\s\*', '.', text)  # end list items with . and remove bullet points
+    if lng.lower() == "bg":
+        text = re.sub(r'\d+((,|\.)*\d+)*', 'НУМТКН ', text)  # replace numbers by a token in Cyrillic
+        text = re.sub(r'[a-zA-Z]', '', text)  # remove latin script
     text = re.sub(r'\d+((,|\.)*\d+)*', 'NUMTKN ', text)  # replace numbers by a token
     text = re.sub(r'[. ]{3,}', '. ', text)  # clean multiple .
     text = re.sub(r'\s{2,}', ' ', text)  # clean multiple spaces
