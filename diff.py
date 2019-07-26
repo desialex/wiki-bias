@@ -132,61 +132,47 @@ def process(input_file) -> Iterator[Dict]:
         idx = 1
         for line in file:
             stats['total'] += 1
-            # print(idx, 'len(line)', len(line))
             if preprocess(line) is None:
                 stats['ignored, short'] += 1
                 continue
-            # print(idx, 'preprocess')
             revs = preprocess(line)  # split string into (tag, before, after)
             if redirected(revs):
                 stats['redir./vandalism'] += 1
-                # print(idx, 'DONE')
                 idx += 1
                 continue
 
-            # print(idx, 'diff')
             revs = diff(revs)  # transform string into a dictionary
             if unchanged(revs):
                 stats['tag removal'] += 1
-                # print(idx, 'DONE')
                 idx += 1
                 continue
             if outlier(revs):
                 stats['outliers'] += 1
-                # print(idx, 'DONE')
                 idx += 1
                 continue
 
-            # print(idx, 'punct_diff')
             revs = punct_diff(revs)  # strip punctuation and lowercase
             if unchanged(revs):
                 stats['punct./case'] += 1
-                # print(idx, 'DONE')
                 idx += 1
                 continue
             if insertions_only(revs):
                 stats['insertions only'] += 1
-                # print(idx, 'DONE')
                 idx += 1
                 continue
             if deletions_only(revs):
                 stats['deletions only'] += 1
-                # print(idx, 'DONE')
                 idx += 1
                 continue
 
-            # print(idx, 'filter_distance')
             revs = filter_distance(revs)  # remove L=1 sentences from rem & add
             if unchanged(revs):
                 stats['spelling mistakes'] += 1
-                # print(idx, 'DONE')
                 idx += 1
                 continue
 
             stats['eligible'] += 1
 
-            # Generator function
-            # print(idx, 'DONE')
             idx += 1
             yield revs
     print(stats)
@@ -194,8 +180,8 @@ def process(input_file) -> Iterator[Dict]:
 
 if __name__ == '__main__':
     lng = sys.argv[1]
-    input = sys.argv[2]  # 'data/bgtest20.txt'
-    output = sys.argv[3]  # 'data/bgtest20.pickle'
+    input = sys.argv[2]
+    output = sys.argv[3]
     print('Start file', input)
     data = [d for d in process(input)]
     to_pickle(data, output)

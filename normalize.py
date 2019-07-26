@@ -31,6 +31,7 @@ def clean_wiki(text):
     text = re.sub(r'\d+((,|\.)*\d+)*', 'NUMTKN ', text)  # replace numbers by a token
     text = re.sub(r'[. ]{3,}', '. ', text)  # clean multiple .
     text = re.sub(r'\s{2,}', ' ', text)  # clean multiple spaces
+    text = re.sub(r'!{10,}', '', text)  # remove excessive exclamation points
     return text
 
 
