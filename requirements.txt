@@ -4,3 +4,5 @@ matplotlib==3.0.3
 xlsxwriter==0.9.6
 editdistance==0.5.3
 sklearn=0.21.1
+requests==2.22.0
+StringBuilder==1.0.0a4
