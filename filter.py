@@ -25,6 +25,7 @@ def main(argv):
     enc = 'UTF-8'
     log = False
     log_file = False
+    report_freq = 1000
     cmd_line = 'filter.py -i <inputfile> -o <outputfile> -l <lang> (-v)'
 
     try:
@@ -69,7 +70,11 @@ def main(argv):
         # Download it if needed
         fname = os.path.basename(infile)
         if not os.path.exists(fname):
+            print("Downloading file : " + fname)
             download_file(infile)
+            print("Finished!")
+        else:
+            print("File " + fname + " already downloaded!")
 
         if log_file:
             pov = POVProcessor("data/tags." + lang + ".txt", enc, outputfile, fname + ".log")
@@ -90,6 +95,9 @@ def main(argv):
                     pov.extract(fullpage.to_string())
                     fullpage = StringBuilder()
                     store = False
+                    cptPage += 1
+                    if cptPage % report_freq == 0:
+                        print(str(cptPage) + " pages processed...")
 
                 elif line.startswith("    <ns>") and not line == "    <ns>0</ns>\n":
                     # Other types of pages
@@ -103,6 +111,8 @@ def main(argv):
 
         pov.write_tags()
         end = time.time()
+        zip.close()
+
         # Delete the file
         os.remove(os.path.basename(fname))
         print("Execution time : " + str((end - start) / 60) + " min")
