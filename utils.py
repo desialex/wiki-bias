@@ -4,12 +4,12 @@ import pickle
 
 
 def to_pickle(data, output_pickle_path):
-    with open(output_pickle_path, 'wb') as f:
+    with open(output_pickle_path + '.pickle', 'wb') as f:
         pickle.dump(data, f)
 
 
 def unpickle(input_pickle_path):
-    with open(input_pickle_path, 'rb') as file:
+    with open(input_pickle_path + '.pickle', 'rb') as file:
         data = pickle.load(file)
         return data
 
