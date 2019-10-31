@@ -42,14 +42,18 @@ def main(argv):
             print(cmd_line)
             sys.exit()
         elif opt in ("-i", "--ifile"):
-            # text file containing a list of path to bz2 files to process
+            # text file containing a list of paths to bz2 files to process
             inputfile = arg
         elif opt in ("-o", "--ofile"):
-            # Suffix to add to input file in order to output results
+            # suffix to add to input file in order to output results
             outputfile = arg
         elif opt in ("-l", "--lang"):
-            # Language tags to use
-            lang = arg
+            # two-letter ISO code for the language
+            if len(arg) == 2:
+                lang = arg
+            else:
+                print("Define language by its two-letter ISO code")
+                sys.exit(2)
         elif opt in ("-v", "--verbose"):
             # log each article title
             log_file = True

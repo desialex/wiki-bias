@@ -203,7 +203,11 @@ def main(argv):
             outputfile = arg
         elif opt in ("-l", "--lang"):
             # two-letter ISO code for the language
-            lang = arg
+            if len(arg) == 2:
+                lang = arg
+            else:
+                print("Define language by its two-letter ISO code")
+                sys.exit(2)
 
     # Sanity check if all mandatory parameters are there
     if not lang or not inputfile or not outputfile:

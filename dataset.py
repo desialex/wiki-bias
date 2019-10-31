@@ -46,7 +46,11 @@ def main(argv):
             inputfile = arg
         elif opt in ("-l", "--lang"):
             # two-letter ISO code for the language
-            lang = arg
+            if len(arg) == 2:
+                lang = arg
+            else:
+                print("Define language by its two-letter ISO code")
+                sys.exit(2)
         elif opt in ("-p", "--prefix"):
             # classifier-specific label prefix, e.g. __label__
             prefix = arg
