@@ -1,20 +1,23 @@
 import bz2
 import sys
 import os
-import getopt
 import time
+import getopt
+import requests
 from pov import POVProcessor
 from StringBuilder import StringBuilder
-import requests
-import shutil
+from clint.textui import progress
 
 
 def download_file(url):
     local_filename = url.split('/')[-1]
-    with requests.get(url, stream=True) as r:
-        with open(local_filename, 'wb') as f:
-            shutil.copyfileobj(r.raw, f)
-
+    response = requests.get(url, stream=True)
+    with open(local_filename, 'wb') as f:
+        total_length = int(response.headers.get('content-length'))
+        for chunk in progress.bar(response.iter_content(chunk_size=512),
+                                  expected_size=(total_length/512) + 1):
+            if chunk:
+                f.write(chunk)
     return local_filename
 
 
