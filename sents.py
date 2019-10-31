@@ -1,4 +1,5 @@
 import sys
+import getopt
 import random
 from utils import to_pickle, unpickle
 from typing import List, Dict
@@ -46,11 +47,39 @@ def get_classes(data: Dict):
     return (add, rem)
 
 
-if __name__ == '__main__':
-    input_file = sys.argv[1]  # 'data/bgtest20.pickle'
-    output_file = sys.argv[2]  # 'data/bgtest20-sents.pickle'
+def main(argv):
+    inputfile = None
+    outputfile = None
+    cmd_line = 'sents.py -i <inputfile> -o <outputfile>'
+
+    try:
+        opts, args = getopt.getopt(argv, "i:o:", ["ifile=", "ofile="])
+    except getopt.GetoptError:
+        print(cmd_line)
+        print(argv)
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print(cmd_line)
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            # pickle file containing diffs of revision pairs
+            inputfile = arg
+        elif opt in ("-o", "--ofile"):
+            # pickle file containing labeled sentences (biased, neutral)
+            outputfile = arg
+
+    # Sanity check if all mandatory parameters are there
+    if not inputfile or not outputfile:
+        print("Missing parameter")
+        print(cmd_line)
+        sys.exit(2)
+    print('Extracting and labeling the sentences...')
     sentences = dict()
-    data = unpickle(input_file)
+    data = unpickle(inputfile)
     sentences['add'], sentences['rem'] = get_classes(data)
-    to_pickle(sentences, output_file)
-    print('DONE')
+    to_pickle(sentences, outputfile)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

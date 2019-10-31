@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
+import getopt
 from nlp import sbd
 from utils import to_pickle
 from normalize import clean_wiki, clean_punct, clean_tag
@@ -175,13 +176,45 @@ def process(input_file) -> Iterator[Dict]:
 
             idx += 1
             yield revs
-    print(stats)
+    print(*[f"{key}: {value}" for key, value in stats.items()], sep='\n')
+
+
+def main(argv):
+    inputfile = None
+    outputfile = None
+    lang = None
+    cmd_line = 'diff.py -i <inputfile> -o <outputfile> -l <lang>'
+
+    try:
+        opts, args = getopt.getopt(argv, "l:i:o:", ["ifile=", "ofile=", "lang="])
+    except getopt.GetoptError:
+        print(cmd_line)
+        print(argv)
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print(cmd_line)
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            # text file containing revision pairs
+            inputfile = arg
+        elif opt in ("-o", "--ofile"):
+            # pickle with extracted differences b/w revision pairs
+            outputfile = arg
+        elif opt in ("-l", "--lang"):
+            # two-letter ISO code for the language
+            lang = arg
+
+    # Sanity check if all mandatory parameters are there
+    if not lang or not inputfile or not outputfile:
+        print("Missing parameter")
+        print(cmd_line)
+        sys.exit(2)
+
+    print('Create file', inputfile)
+    data = [d for d in process(inputfile)]
+    to_pickle(data, outputfile)
 
 
 if __name__ == '__main__':
-    lng = sys.argv[1]
-    input = sys.argv[2]
-    output = sys.argv[3]
-    print('Start file', input)
-    data = [d for d in process(input)]
-    to_pickle(data, output)
+    main(sys.argv[1:])
