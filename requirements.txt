@@ -6,3 +6,4 @@ editdistance==0.5.3
 sklearn=0.21.1
 requests==2.22.0
 StringBuilder==1.0.0a4
+clint==0.5.1
