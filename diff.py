@@ -215,7 +215,7 @@ def main(argv):
         print(cmd_line)
         sys.exit(2)
 
-    print('Create file', inputfile)
+    print('Processing file', inputfile)
     data = [d for d in process(inputfile)]
     to_pickle(data, outputfile)
 
