@@ -2,7 +2,7 @@
 This repository contains the code used in ... for the creation of three datasets for the task of bias detection.
 
 ## Prerequisites
-- Python 3.5 or later
+- Python 3.6 or later
 - All dependencies `pip install -r /path/to/requirements.txt`
 
 ## Usage
