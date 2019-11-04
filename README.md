@@ -1,12 +1,13 @@
 # wiki-bias
+This repository contains the code used in ... for the creation of three datasets for the task of bias detection.
 
 ## Prerequisites
-- Python 3.5 or later; Anaconda is a simple way to install it.
+- Python 3.5 or later
 - All dependencies `pip install -r /path/to/requirements.txt`
 
 ## Usage
 
-##### 1. URLs
+#### 1. URLs
 Extract the urls of all parts of the complete page edit history dump.
 While dumps of small Wikipedias (like the one in Bulgarian) come in a single file,
 the large ones (English, French, etc.) are split into multiple smaller files.
@@ -15,36 +16,36 @@ Make sure to select an __existing date__ from the list on
 `https://dumps.wikimedia.org/{lang}wiki/` and then verify the presence of a dump called __All pages with complete page edit history__.
 
 ```bash
-python url_extractor.py -o <outputfile> -l <lang> -d <date>
+python url_extractor.py -o <outputfile> --lang <XX> --date <YYYMMDD>
 #python url_extractor.py -o urls.txt -l fr -d 20191001
 ```
 
-##### 2. Download and extraction of revision pairs
+#### 2. Download and extraction of revision pairs
 Download all parts of the dump and extract the relevant revision pairs.
 
 __Attention!__ The download and _on-the-fly_ processing of highly compressed dump files
 requires time. Consider parallelizing this step if you need to process large Wikis split
 into multiple files.
 ```bash
-python filter.py -i <inputfile> -o <outputfile> -l <lang>
+python filter.py -i <inputfile> -o <outputfile> --lang <XX>
 #python filter.py -i urls.txt -o revisions.txt -l fr
 ```
 
-##### 3. Preprocessing and diff check
+#### 3. Preprocessing and diff check
 Preprocessing, segmentation, cleanup, diff check, filtering.
 ```bash
-python diff.py -i <inputfile> -o <outputfile> -l <lang>
+python diff.py -i <inputfile> -o <outputfile> --lang <XX>
 #python diff.py -i revisions.txt -o diffs -l fr
 ```
 
-##### 4. Sentence extraction
+#### 4. Sentence extraction
 Sentence extraction, duplicates cleanup, classes, balancing.
 ```bash
 python sents.py -i <inputfile> -o <outputfile>
 #python sents.py -i diffs -o sents
 ```
 
-##### 5. Labeling and splitting
+#### 5. Labeling and splitting
 Class labels, dataset split.
 ```bash
 python dataset.py -i <inputfile> -l <lang> (-p <prefix>)

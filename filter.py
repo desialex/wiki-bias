@@ -79,9 +79,10 @@ def main(argv):
         if not os.path.exists(fname):
             print("Downloading file : " + fname)
             download_file(infile)
-            print("Finished!")
+            print("Download finished!")
         else:
             print("File " + fname + " already downloaded!")
+        print("Filtering...")
 
         if log_file:
             pov = POVProcessor("data/tags." + lang + ".txt", enc, outputfile, fname + ".log")
