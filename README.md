@@ -35,21 +35,21 @@ python filter.py -i <inputfile> -o <outputfile> --lang <XX>
 Preprocessing, segmentation, cleanup, diff check, filtering.
 ```bash
 python diff.py -i <inputfile> -o <outputfile> --lang <XX>
-#python diff.py -i revisions.txt -o diffs -l fr
+#python diff.py -i revisions.txt -o diffs.pickle -l fr
 ```
 
 #### 4. Sentence extraction
 Sentence extraction, duplicates cleanup, classes, balancing.
 ```bash
 python sents.py -i <inputfile> -o <outputfile>
-#python sents.py -i diffs -o sents
+#python sents.py -i diffs.pickle -o sents.pickle
 ```
 
 #### 5. Labeling and splitting
 Class labels, dataset split.
 ```bash
 python dataset.py -i <inputfile> -l <lang> (-p <prefix>)
-#python dataset.py -i sents -o -l fr -p __label__
+#python dataset.py -i sents.pickle -l fr -p __label__
 ```
 
 ## Datasets
