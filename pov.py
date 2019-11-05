@@ -15,7 +15,7 @@ class POVProcessor(object):
         with open(os.path.join(os.getcwd(), tags_file), encoding=enc) as f:
             tags = f.read().strip().split('\n')
 
-        self.regex = r'(?i){{((' + r'|'.join(tags) + r'))(\|[^}]+)?}}'
+        self.regex = r'(?i){{((' + r'|'.join(tags) + r'))(\|[^}]+)?}}' # FIXME: why ((..))
         self.match = lambda x: re.search(self.regex, str(x.find('text').text))
         self.all_tags = re.compile(r"{{([^|}]+)}}")
 
