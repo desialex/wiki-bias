@@ -11,10 +11,15 @@ class POVProcessor(object):
     the list found in the tag file.
     """
 
-    def __init__(self, tags_file: str, enc: str, output_file: str, logfile: str):
-        with open(os.path.join(os.getcwd(), tags_file), encoding=enc) as f:
-            tags = [re.escape(tag) for tag in f.read().strip().split('\n')]
+    default_tags = 'NPOV\nEditorial'
 
+    def __init__(self, tags_file: str, enc: str, output_file: str, logfile: str):
+        if os.path.exists(os.path.join(os.getcwd(), tags_file)):
+            with open(os.path.join(os.getcwd(), tags_file), encoding=enc) as f:
+                tags = [re.escape(tag) for tag in f.read().strip().split('\n')]
+        else:
+            print(f'{tags_file} not found, using default tags' )
+            tags = [re.escape(tag) for tag in POVProcessor.default_tags.split('\n')]
         self.regex = r'(?i){{((' + r'|'.join(tags) + r'))(\|[^}]+)?}}' # FIXME: why ((..))
         self.match = lambda x: re.search(self.regex, str(x.find('text').text))
         self.all_tags = re.compile(r"{{([^|}]+)}}")
