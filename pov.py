@@ -13,7 +13,7 @@ class POVProcessor(object):
 
     def __init__(self, tags_file: str, enc: str, output_file: str, logfile: str):
         with open(os.path.join(os.getcwd(), tags_file), encoding=enc) as f:
-            tags = f.read().strip().split('\n')
+            tags = [re.escape(tag) for tag in f.read().strip().split('\n')]
 
         self.regex = r'(?i){{((' + r'|'.join(tags) + r'))(\|[^}]+)?}}' # FIXME: why ((..))
         self.match = lambda x: re.search(self.regex, str(x.find('text').text))
