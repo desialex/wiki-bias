@@ -1,8 +1,14 @@
-import sys
 import re
 import regex
+import argparse
+from utils import check_lang
 
-lng = sys.argv[1]
+
+parser = argparse.ArgumentParser('language')
+parser.add_argument('-l', '--lang', action="store", dest='lang',
+                    required=True, type=check_lang,
+                    help='Two-letter language tag to fetch')
+args, _ = parser.parse_known_args()
 
 
 def clean_wiki(text):
@@ -25,7 +31,7 @@ def clean_wiki(text):
     text = re.sub(r'<[^>]*>', '', text)  # trailing HTML tags
     text = re.sub(r'&.{4,6};', '', text)  # HTML unicode characters
     text = re.sub(r'\s\*', '.', text)  # end list items with . and remove bullet points
-    if lng.lower() == "bg":
+    if args.lang.lower() == "bg":
         text = re.sub(r'\d+((,|\.)*\d+)*', 'НУМТКН ', text)  # replace numbers by a token in Cyrillic
         text = re.sub(r'[a-zA-Z]', '', text)  # remove latin script
     text = re.sub(r'\d+((,|\.)*\d+)*', 'NUMTKN ', text)  # replace numbers by a token
@@ -36,7 +42,7 @@ def clean_wiki(text):
 
 
 def clean_punct(text):
-    if lng.lower() == "fr":
+    if args.lang.lower() == "fr":
         text = re.sub(r"[.,\/#!?†‡•$%‰\^&\*;:{}|=–\-_—‗‾⁄`~′″‴‵‶‷()‚‛“”„‟‹›№«»]", ' ', text) # keep U+0027, U+2018 and U+2019 (=apostrophies)
     else:
         text = re.sub(r"[.,\/#!?†‡•$%‰\^&\*;:{}|=–\-_—‗‾⁄`~′″‴‵‶‷()‘’‚‛“”„‟‹›'№]", ' ', text)  # remove punctuation and symbols

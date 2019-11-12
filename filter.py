@@ -2,11 +2,12 @@ import bz2
 import sys
 import os
 import time
-import getopt
+import argparse
 import requests
 from pov import POVProcessor
 from StringBuilder import StringBuilder
 from clint.textui import progress
+from utils import check_lang
 
 
 def download_file(url):
@@ -22,50 +23,31 @@ def download_file(url):
 
 
 def main(argv):
-    inputfile = None
-    outputfile = None
-    lang = None
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--inputfile', action="store", dest='inputfile',
+                        required=True,
+                        help='Text file containing a list of paths to bz2 files to process')
+    parser.add_argument('-o', '--outputfile', action="store", dest='outputfile',
+                        required=True,
+                        help='Suffix to add to input file in order to output results')
+    parser.add_argument('-l', '--lang', action="store", dest='lang',
+                        required=True, type=check_lang,
+                        help='Two-letter language tag to fetch')
+    parser.add_argument('-r', '--remove', action="store_true",
+                        help='Include to activate file deletion after processing')
+    parser.add_argument('-v', '--verbose', action="store_true",
+                        help='Include to log each article title')
+    args = parser.parse_args()
+
     enc = 'UTF-8'
-    log = False
     log_file = False
     report_freq = 1000
-    cmd_line = 'filter.py -i <inputfile> -o <outputfile> -l <lang> (-v)'
 
-    try:
-        opts, args = getopt.getopt(argv, "vl:i:o:", ["ifile=", "ofile=", "lang=", "verbose"])
-    except getopt.GetoptError:
-        print(cmd_line)
-        print(argv)
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print(cmd_line)
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            # text file containing a list of paths to bz2 files to process
-            inputfile = arg
-        elif opt in ("-o", "--ofile"):
-            # suffix to add to input file in order to output results
-            outputfile = arg
-        elif opt in ("-l", "--lang"):
-            # two-letter ISO code for the language
-            if len(arg) == 2:
-                lang = arg
-            else:
-                print("Define language by its two-letter ISO code")
-                sys.exit(2)
-        elif opt in ("-v", "--verbose"):
-            # log each article title
-            log_file = True
+    if args.verbose:
+        log_file = True
 
-    # Sanity check if all mandatory parameters are there
-    if not lang or not inputfile or not outputfile:
-        print("Missing parameter")
-        print(cmd_line)
-        sys.exit(2)
-
-    # read the file list and run them
-    files = open(inputfile).readlines()
+    # Read the file list and run them
+    files = open(args.inputfile).readlines()
 
     for infile in files:
         if not infile or infile == '':
@@ -85,11 +67,12 @@ def main(argv):
         print("Filtering...")
 
         if log_file:
-            pov = POVProcessor("data/tags." + lang + ".txt", enc, outputfile, fname + ".log")
+            pov = POVProcessor("data/tags." + args.lang + ".txt", enc,
+                               args.outputfile, fname + ".log")
         else:
-            pov = POVProcessor("data/tags." + lang + ".txt", enc, outputfile, None)
+            pov = POVProcessor("data/tags." + args.lang + ".txt", enc,
+                               args.outputfile, None)
         cptPage = 0
-        cptLine = 0
         zip = bz2.BZ2File(fname)
         store = False
         fullpage = StringBuilder()
@@ -99,7 +82,7 @@ def main(argv):
             if store:
                 fullpage.append(line)
                 if line == "  </page>\n":
-                    # process it
+                    # Process it
                     pov.extract(fullpage.to_string())
                     fullpage = StringBuilder()
                     store = False
@@ -122,7 +105,9 @@ def main(argv):
         zip.close()
 
         # Delete the file
-        os.remove(os.path.basename(fname))
+        if args.remove:
+            os.remove(os.path.basename(fname))
+
         print("Execution time : " + str((end - start) / 60) + " min")
 
 

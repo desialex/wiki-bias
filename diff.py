@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
-import getopt
-from nlp import sbd
-from utils import to_pickle
-from normalize import clean_wiki, clean_punct, clean_tag
+import argparse
 import editdistance
+from nlp import sbd
+from utils import to_pickle, check_lang
+from normalize import clean_wiki, clean_punct, clean_tag
 from typing import List, Text, Iterator, Dict
 
 
@@ -180,45 +180,22 @@ def process(input_file) -> Iterator[Dict]:
 
 
 def main(argv):
-    inputfile = None
-    outputfile = None
-    lang = None
-    cmd_line = 'diff.py -i <inputfile> -o <outputfile> -l <lang>'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--inputfile', action="store", dest='inputfile',
+                        required=True,
+                        help='Text file containing a list of paths to bz2 files to process')
+    parser.add_argument('-o', '--outputfile', action="store", dest='outputfile',
+                        required=True,
+                        help='Suffix to add to input file in order to output results')
+    parser.add_argument('-l', '--lang', action="store", dest='lang',
+                        required=True, type=check_lang,
+                        help='Two-letter language tag to fetch')
+    args = parser.parse_args()
 
-    try:
-        opts, args = getopt.getopt(argv, "l:i:o:", ["ifile=", "ofile=", "lang="])
-    except getopt.GetoptError:
-        print(cmd_line)
-        print(argv)
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print(cmd_line)
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            # text file containing revision pairs
-            inputfile = arg
-        elif opt in ("-o", "--ofile"):
-            # pickle with extracted differences b/w revision pairs
-            outputfile = arg
-        elif opt in ("-l", "--lang"):
-            # two-letter ISO code for the language
-            if len(arg) == 2:
-                lang = arg
-            else:
-                print("Define language by its two-letter ISO code")
-                sys.exit(2)
-
-    # Sanity check if all mandatory parameters are there
-    if not lang or not inputfile or not outputfile:
-        print("Missing parameter")
-        print(cmd_line)
-        sys.exit(2)
-
-    print('Processing file', inputfile)
-    data = [d for d in process(inputfile)]
-    to_pickle(data, outputfile)
+    print(f'Processing file {args.inputfile}')
+    data = [d for d in process(args.inputfile)]
+    to_pickle(data, args.outputfile)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

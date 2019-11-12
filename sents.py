@@ -1,5 +1,5 @@
 import sys
-import getopt
+import argparse
 import random
 from utils import to_pickle, unpickle
 from typing import List, Dict
@@ -48,37 +48,20 @@ def get_classes(data: Dict):
 
 
 def main(argv):
-    inputfile = None
-    outputfile = None
-    cmd_line = 'sents.py -i <inputfile> -o <outputfile>'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--inputfile', action="store", dest='inputfile',
+                        required=True,
+                        help='Text file containing a list of paths to bz2 files to process')
+    parser.add_argument('-o', '--outputfile', action="store", dest='outputfile',
+                        required=True,
+                        help='Suffix to add to input file in order to output results')
+    args = parser.parse_args()
 
-    try:
-        opts, args = getopt.getopt(argv, "i:o:", ["ifile=", "ofile="])
-    except getopt.GetoptError:
-        print(cmd_line)
-        print(argv)
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print(cmd_line)
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            # pickle file containing diffs of revision pairs
-            inputfile = arg
-        elif opt in ("-o", "--ofile"):
-            # pickle file containing labeled sentences (biased, neutral)
-            outputfile = arg
-
-    # Sanity check if all mandatory parameters are there
-    if not inputfile or not outputfile:
-        print("Missing parameter")
-        print(cmd_line)
-        sys.exit(2)
     print('Extracting and labeling the sentences...')
     sentences = dict()
-    data = unpickle(inputfile)
+    data = unpickle(args.inputfile)
     sentences['add'], sentences['rem'] = get_classes(data)
-    to_pickle(sentences, outputfile)
+    to_pickle(sentences, args.outputfile)
 
 
 if __name__ == '__main__':

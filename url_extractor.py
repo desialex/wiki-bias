@@ -1,7 +1,8 @@
-import urllib.request, urllib.error, urllib.parse
-import sys
-import argparse
 import re
+import sys
+import urllib.request
+import argparse
+from utils import check_date, check_lang
 
 
 def main(argv):
@@ -16,20 +17,15 @@ def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--outputfile', action="store", dest='outpufile',
                         required=True,
-                        help='Full path to output the url list into',)
+                        help='Full path to output the url list into')
     parser.add_argument('-l', '--lang', action="store", dest='lang',
-                        required=True,
-                        help='Two-letter language tag to fetch',)
+                        required=True, type=check_lang,
+                        help='Two-letter language tag to fetch')
     parser.add_argument('-d', '--date', action="store", dest='date',
-                        required=True,
+                        required=True, type=check_date,
                         help='The exact wikipedia archive date (YYYMMDD)')
     args = parser.parse_args()
     baseurl = 'https://dumps.wikimedia.org'
-
-    # Verify date format
-    if len(args.date) != 8:
-        print('Date must be in the following format: YYYYMMDD')
-        sys.exit()
 
     # Download page
     response = urllib.request.urlopen(baseurl + "/" + args.lang + "wiki/"
