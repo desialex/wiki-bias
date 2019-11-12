@@ -37,7 +37,15 @@ def check_lang(string):
 
 
 def check_date(string):
-    if len(string) != 8:
+    try:
+        assert len(string) == 8
+        yyyy = int(string[0:4])
+        mm = int(string[4:6])
+        dd = int(string[6:])
+        assert 2001 <= yyyy <= 2050
+        assert 1 <= mm <= 12
+        assert 1 <= dd <= 31
+    except:
         msg = "Date must be in the following format: YYYYMMDD"
         raise argparse.ArgumentTypeError(msg)
     return string
